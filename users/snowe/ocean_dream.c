@@ -26,7 +26,6 @@
 #define SHOOTING_STAR_ANIMATION_MODULATOR NUMBER_OF_FRAMES / SHOOTING_STAR_ANIMATION_SPEED  // CALCULATED: Don't Touch
 #define STAR_ANIMATION_MODULATOR NUMBER_OF_FRAMES / STAR_ANIMATION_SPEED                    // CALCULATED: Don't Touch
 #define ENABLE_MOON
-#define ENABLE_WAVE
 
 uint8_t    animation_counter       = 0;  // global animation counter.
 bool       is_calm                 = false;

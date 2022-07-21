@@ -24,6 +24,9 @@
 
 #    include <stdio.h>  // for keylog?
 
+static bool is_asleep = false;
+static uint32_t oled_timer = 0;
+
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
     if (!is_keyboard_master()) {
         return OLED_ROTATION_270;  // flips the display 180 degrees if offhand
@@ -113,7 +116,7 @@ void render_wpm(void) {
     oled_write_ln(wpm, false);
 }
 
-bool oled_task_user(void) {
+void render_all(void) {
     if (is_keyboard_master()) {
         render_os_symbol();
         oled_write_P(PSTR("     "), false);
@@ -122,15 +125,35 @@ bool oled_task_user(void) {
         oled_write_P(PSTR("     "), false);
         oled_write_P(PSTR("     "), false);
         render_wpm();
-
-#    ifdef LUNA_ENABLE
+    #ifdef LUNA_ENABLE
         led_usb_state = host_keyboard_led_state();
         render_luna(0, 13);
-#    endif
+    #endif
     } else {
-#    ifdef OCEAN_DREAM_ENABLE
+    #ifdef OCEAN_DREAM_ENABLE
         render_stars();
-#    endif
+    #endif
+    }
+}
+
+bool oled_task_user(void) {
+    if (get_current_wpm() > 0) {
+        oled_on();
+        is_asleep = false;
+        oled_timer = 0;
+        render_all();
+        return false;
+    }
+
+    if (!is_asleep && timer_elapsed32(oled_timer) < 60000) {
+        oled_on();
+        is_asleep = false;
+        render_all();
+        return false; 
+    } else {
+        oled_off();
+        is_asleep = true;
+        return false;
     }
     return false;
 }
