@@ -25,6 +25,8 @@
 #define OCEAN_ANIMATION_MODULATOR NUMBER_OF_FRAMES / OCEAN_ANIMATION_SPEED                  // CALCULATED: Don't Touch
 #define SHOOTING_STAR_ANIMATION_MODULATOR NUMBER_OF_FRAMES / SHOOTING_STAR_ANIMATION_SPEED  // CALCULATED: Don't Touch
 #define STAR_ANIMATION_MODULATOR NUMBER_OF_FRAMES / STAR_ANIMATION_SPEED                    // CALCULATED: Don't Touch
+#define ENABLE_MOON
+#define ENABLE_WAVE
 
 uint8_t    animation_counter       = 0;  // global animation counter.
 bool       is_calm                 = false;
@@ -545,11 +547,4 @@ void render_stars(void) {
         animation_counter = increment_counter(animation_counter, NUMBER_OF_FRAMES);
     }
 
-    // this fixes the screen on and off bug
-    if (current_wpm > 0) {
-        oled_on();
-        starry_night_anim_sleep = timer_read32();
-    } else if (timer_elapsed32(starry_night_anim_sleep) > OLED_TIMEOUT) {
-        oled_off();
-    }
 }

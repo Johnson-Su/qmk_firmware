@@ -1,4 +1,4 @@
-BOOTMAGIC_ENABLE = no       # Enable Bootmagic Lite
+BOOTMAGIC_ENABLE = yes       # Enable Bootmagic Lite
 MOUSEKEY_ENABLE = no        # Mouse keys(+4700)
 EXTRAKEY_ENABLE = yes       # Audio control and System control(+450)
 CONSOLE_ENABLE = no         # Console for debug(+400)
@@ -16,11 +16,11 @@ RGBLIGHT_TWINKLE = no
 OLED_ENABLE = yes
 OLED_DRIVER = SSD1306
 RGB_MATRIX_ENABLE = yes
+VIA_ENABLE = yes
 
 OCEAN_DREAM_ENABLE = yes
-LUNA_ENABLE = no # disabled so travis build succeeds
+LUNA_ENABLE = yes
 
-# if firmware size over limit, try this option
 LTO_ENABLE = yes
 
 WPM_ENABLE = yes

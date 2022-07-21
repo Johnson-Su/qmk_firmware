@@ -39,15 +39,17 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 
 void oled_render_layer_state(void) {
     oled_write_P(PSTR("Layer"), false);
+    static const char PROGMEM arrow[2] = {16,'\0'};
+    oled_write_P(arrow, false);
     switch (layer_state) {
         case L_BASE:
-            oled_write_ln_P(PSTR("Main"), false);
+            oled_write_P(PSTR("Main"), false);
             break;
         case L_GAME:
-            oled_write_ln_P(PSTR("Game"), false);
+            oled_write_ln_P(PSTR("Bot"), false);
             break;
         case L_LOWER:
-            oled_write_ln_P(PSTR("Bot"), false);
+            oled_write_ln_P(PSTR("Top"), false);
             break;
         case L_RAISE:
             oled_write_ln_P(PSTR("Top"), false);
@@ -84,30 +86,13 @@ void set_keylog(uint16_t keycode, keyrecord_t *record) {
     snprintf(keylog_str, sizeof(keylog_str), "%dx%d, k%2d : %c", record->event.key.row, record->event.key.col, keycode, name);
 }
 
-void oled_render_keylog(void) { oled_write(keylog_str, false); }
-
-// void render_bootmagic_status(bool status) {
-//    /* Show Ctrl-Gui Swap options */
-//    static const char PROGMEM logo[][2][3] = {
-//        {{0x97, 0x98, 0}, {0xb7, 0xb8, 0}},
-//        {{0x95, 0x96, 0}, {0xb5, 0xb6, 0}},
-//    };
-//    if (status) {
-//        oled_write_ln_P(logo[0][0], false);
-//        oled_write_ln_P(logo[0][1], false);
-//    } else {
-//        oled_write_ln_P(logo[1][0], false);
-//        oled_write_ln_P(logo[1][1], false);
-//    }
-//}
-void render_bootmagic_status(void) {
+void render_os_symbol(void){
     /* Show Ctrl-Gui Swap options */
     static const char PROGMEM logo[][2][3] = {
         {{0x97, 0x98, 0}, {0xb7, 0xb8, 0}},
         {{0x95, 0x96, 0}, {0xb5, 0xb6, 0}},
     };
-    oled_write_P(PSTR("BTMGK"), false);
-    oled_write_P(PSTR(""), false);
+    oled_write_P(PSTR("  "), false);
     if (!keymap_config.swap_lctl_lgui) {
         oled_write_P(logo[1][0], false);
         oled_write_P(PSTR("   "), false);
@@ -117,9 +102,12 @@ void render_bootmagic_status(void) {
         oled_write_P(PSTR("   "), false);
         oled_write_P(logo[0][1], false);
     }
-    oled_write_P(PSTR("   NKRO "), keymap_config.nkro);
-    oled_write_P(PSTR("WPM: "), false);
-
+    oled_write_P(PSTR(" "), false);
+}
+void render_wpm(void) {
+    oled_write_P(PSTR("WPM  "), false);
+    static const char PROGMEM arrow[2] = {16,'\0'};
+    oled_write_P(arrow, false);
     char wpm[6];
     itoa(get_current_wpm(), wpm, 10);
     oled_write_ln(wpm, false);
@@ -127,9 +115,13 @@ void render_bootmagic_status(void) {
 
 bool oled_task_user(void) {
     if (is_keyboard_master()) {
+        render_os_symbol();
+        oled_write_P(PSTR("     "), false);
+        oled_write_P(PSTR("     "), false);
         oled_render_layer_state();
-        oled_render_keylog();
-        render_bootmagic_status();
+        oled_write_P(PSTR("     "), false);
+        oled_write_P(PSTR("     "), false);
+        render_wpm();
 
 #    ifdef LUNA_ENABLE
         led_usb_state = host_keyboard_led_state();
