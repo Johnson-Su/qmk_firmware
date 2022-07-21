@@ -24,8 +24,8 @@
 
 #    include <stdio.h>  // for keylog?
 
-static bool is_asleep = false;
 static uint32_t oled_timer = 0;
+bool oled_status = true;
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
     if (!is_keyboard_master()) {
@@ -137,23 +137,26 @@ void render_all(void) {
 }
 
 bool oled_task_user(void) {
-    if (get_current_wpm() > 0) {
+    if(get_current_wpm() > 0) {
+        oled_timer = timer_read32();
         oled_on();
-        is_asleep = false;
-        oled_timer = 0;
-        render_all();
-        return false;
+        oled_status = true;
     }
-
-    if (!is_asleep && timer_elapsed32(oled_timer) < 60000) {
+    if(!oled_status && get_current_wpm() > 0){
         oled_on();
-        is_asleep = false;
+        oled_status = true;
         render_all();
-        return false; 
-    } else {
+    } else if (!oled_status) {
         oled_off();
-        is_asleep = true;
-        return false;
+    } else {
+        if(timer_elapsed32(oled_timer) >= 60000){
+            oled_status = false;
+            oled_off();
+            return false;
+        } else {
+            oled_on();
+            render_all();
+        }
     }
     return false;
 }
